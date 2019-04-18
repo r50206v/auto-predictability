@@ -58,7 +58,8 @@ for fileName in tqdm(fileList):
             'er': er,
         }, f, protocol=True)
     # with open(file_dst, 'rb') as f:
-    #     probMap[name] = pickle.load(f)['prob'] 
+        # probMap[name] = pickle.load(f)['prob'] 
+        # erMap[name] = np.nanmean(pickle.load(f)['er'])
 
 
 data = pd.DataFrame(probMap, index=['value']).sort_values(by=['value'], axis=1)
@@ -67,6 +68,7 @@ plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
 plt.yticks(np.arange(len(data.columns)), data.columns.values)
 plt.xticks(np.arange(0, 1, 0.05))
 plt.title('Maximum Extropy')
+plt.xlabel('auto predictability')
 plt.grid(axis='x')
 plt.margins(y=0.01)
 plt.autoscale()
@@ -80,6 +82,7 @@ plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
 plt.yticks(np.arange(len(data.columns)), data.columns.values)
 plt.xticks(np.arange(0, 1, 0.05))
 plt.title('Efficiency Ratio')
+plt.xlabel('efficiency ratio')
 plt.grid(axis='x')
 plt.margins(y=0.01)
 plt.autoscale()
