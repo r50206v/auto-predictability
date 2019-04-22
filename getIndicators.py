@@ -16,7 +16,7 @@ calculating some predictability indicators for several assets
 2) Efficient Ratio
 '''
 
-n = 8 # for efficient ratio
+n = 5 # for efficient ratio
 probMap, erMap = {}, {}
 path = sys.path[0]
 fileList = os.listdir(path + '/dataset/')
@@ -36,7 +36,10 @@ for fileName in tqdm(fileList):
     # calculate Efficiency Ratio
     er = getER(data, n)
     erMap[name] = np.nanmean(er)
-    
+
+
+    # boxcox transformation
+    data = boxcox(data)
 
     # calculate Maximum Entropy
     data = data.pct_change()\
