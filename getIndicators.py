@@ -27,7 +27,10 @@ for fileName in tqdm(fileList):
 
     data = pd.read_csv(path + '/dataset/' + fileName, index_col=0)
     data.index = pd.to_datetime(data.index, format='%Y-%m-%d')
-    data = data.loc[(data.index > '2005-12-31') & (data.index < '2018-01-02')]
+    
+    start_date = '2009-07-01' #'2005-12-31'
+    end_date = data.index[-1].strftime('%Y-%m-%d') #'2018-01-01'
+    data = data.loc[(data.index > start_date) & (data.index <= end_date)] #& (data.index < '2018-01-02')
 
 
     # calculate Efficiency Ratio
@@ -67,7 +70,7 @@ plt.figure(figsize=(15, 8))
 plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
 plt.yticks(np.arange(len(data.columns)), data.columns.values)
 plt.xticks(np.arange(0, 1, 0.05))
-plt.title('Maximum Extropy')
+plt.title('Maximum Extropy - %s~%s' % (start_date, end_date))
 plt.xlabel('auto predictability')
 plt.grid(axis='x')
 plt.margins(y=0.01)
@@ -81,8 +84,8 @@ plt.figure(figsize=(15, 8))
 plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
 plt.yticks(np.arange(len(data.columns)), data.columns.values)
 plt.xticks(np.arange(0, 1, 0.05))
-plt.title('Efficiency Ratio')
-plt.xlabel('efficiency ratio')
+plt.title('Efficiency Ratio - %s~%s' % (start_date, end_date))
+plt.xlabel('efficiency ratio (n=%d)' % n)
 plt.grid(axis='x')
 plt.margins(y=0.01)
 plt.autoscale()
