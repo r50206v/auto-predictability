@@ -46,11 +46,12 @@ for fileName in tqdm(fileList):
 
 
     # boxcox transformation
-    data = boxcox(data)
-
-    # calculate Maximum Entropy
     data = data.pct_change()\
                .dropna()
+    # data = boxcox(data)
+    # data = data.loc[(data != 0).any(1)]
+
+    # calculate Maximum Entropy
     p = getP(data[stat_id])
     nom = getBlock(data[stat_id], p)
     denom = getBlock(data[stat_id], p - 1)
