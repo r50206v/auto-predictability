@@ -21,13 +21,15 @@ elif len(sys.argv) == 3:
     start_date = sys.argv[1]
     end_date = sys.argv[2]
 
-n = 5 # for efficient ratio
-probMap, erMap = {}, {}
+
+n = 8 # for efficient ratio
+probMap = dict({k: {} for k in ['外匯','先進國家','新興市場','ETF','原物料']})
+erMap = dict({k: {} for k in ['外匯','先進國家','新興市場','ETF','原物料']})
 path = sys.path[0]
-fileList = os.listdir(path + '/dataset/')
+fileList = sorted(os.listdir(path + '/dataset/'))
 sys.stderr.write('start processing %d files from %s' % (len(fileList), path+'/dataset/'))
 for fileName in tqdm(fileList):
-    stat_id, name = fileName.split('-', 1)
+    stat_id, category, name = fileName.split('-', 2)
     name = name.replace('.csv', '')
 
     data = pd.read_csv(path + '/dataset/' + fileName, index_col=0)
@@ -42,7 +44,7 @@ for fileName in tqdm(fileList):
 
     # calculate Efficiency Ratio
     er = getER(data, n)
-    erMap[name] = np.nanmean(er)
+    erMap[category][name] = np.nanmean(er)
 
 
     # boxcox transformation
@@ -57,11 +59,11 @@ for fileName in tqdm(fileList):
     denom = getBlock(data[stat_id], p - 1)
     gamma = getBlock(data[stat_id], 0)[0][0]
     prob = np.log2(gamma / (np.linalg.det(nom) / np.linalg.det(denom)))
-    probMap[name] = prob
+    probMap[category][name] = prob if pd.notnull(prob) else 0
 
 
     # pickle results
-    file_dst = path + '/result/%s-%s.pkl' % (stat_id, name)
+    file_dst = path + '/result/%s-%s-%s.pkl' % (stat_id, category, name)
     with open(file_dst, 'wb') as f:
         pickle.dump({
             'p': p,
@@ -72,41 +74,20 @@ for fileName in tqdm(fileList):
             'er': er,
         }, f, protocol=True)
     # with open(file_dst, 'rb') as f:
-        # probMap[name] = pickle.load(f)['prob'] 
-        # erMap[name] = np.nanmean(pickle.load(f)['er'])
+    #     # probMap[category][name] = pickle.load(f)['prob'] 
+    #     erMap[category][name] = np.nanmean(pickle.load(f)['er'])
 
 
-data = pd.DataFrame(probMap, index=['value']).sort_values(by=['value'], axis=1)
-plt.figure(figsize=(15, 8))
-plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
-plt.yticks(np.arange(len(data.columns)), data.columns.values)
-plt.xticks(np.arange(0, 1, 0.05))
-plt.title('Maximum Extropy - %s~%s' % (start_date, end_date))
-plt.xlabel('auto predictability')
-plt.grid(axis='x')
-plt.margins(y=0.01)
-plt.autoscale()
-plt.tight_layout()
-plt.savefig(path + '/auto-predictability.png')
-
-
-data = pd.DataFrame(erMap, index=['value']).sort_values(by=['value'], axis=1)
-plt.figure(figsize=(15, 8))
-plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
-plt.yticks(np.arange(len(data.columns)), data.columns.values)
-plt.xticks(np.arange(0, 1, 0.05))
-plt.title('Efficiency Ratio - %s~%s' % (start_date, end_date))
-plt.xlabel('efficiency ratio (n=%d)' % n)
-plt.grid(axis='x')
-plt.margins(y=0.01)
-plt.autoscale()
-plt.tight_layout()
-plt.savefig(path + '/efficiency-ratio.png')import matplotlib
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei'] 
-plt.rcParams['axes.unicode_minus'] = False    data = pd.DataFrame(probDict, index=['value']).sort_values(by=['value'], axis=1)
+plt.rcParams['axes.unicode_minus'] = False
+
+
+for category, probDict in probMap.items():
+    data = pd.DataFrame(probDict, index=['value']).sort_values(by=['value'], axis=1)
     plt.figure(figsize=(15, 8))
     plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
     plt.yticks(np.arange(len(data.columns)), data.columns.values)
@@ -117,7 +98,11 @@ plt.rcParams['axes.unicode_minus'] = False    data = pd.DataFrame(probDict, inde
     plt.margins(y=0.01)
     plt.autoscale()
     plt.tight_layout()
-    plt.savefig(path + '/%s-auto-predictability-%s-%s.png' % (category, start_date, end_date))    data = pd.DataFrame(erDict, index=['value']).sort_values(by=['value'], axis=1)
+    plt.savefig(path + '/%s-auto-predictability-%s-%s.png' % (category, start_date, end_date))
+
+
+for category, erDict in erMap.items():
+    data = pd.DataFrame(erDict, index=['value']).sort_values(by=['value'], axis=1)
     plt.figure(figsize=(15, 8))
     plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
     plt.yticks(np.arange(len(data.columns)), data.columns.values)
