@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import _pickle as pickle
+import warnings
+warnings.filterwarnings('ignore')
 from functions import *
 
 
