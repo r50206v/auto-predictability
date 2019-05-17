@@ -4,9 +4,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import _pickle as pickle
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 from functions import *
 
 
@@ -93,4 +90,31 @@ plt.grid(axis='x')
 plt.margins(y=0.01)
 plt.autoscale()
 plt.tight_layout()
-plt.savefig(path + '/efficiency-ratio.png')
+plt.savefig(path + '/efficiency-ratio.png')import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei'] 
+plt.rcParams['axes.unicode_minus'] = False    data = pd.DataFrame(probDict, index=['value']).sort_values(by=['value'], axis=1)
+    plt.figure(figsize=(15, 8))
+    plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
+    plt.yticks(np.arange(len(data.columns)), data.columns.values)
+    plt.xticks(np.arange(0, 1, 0.05))
+    plt.title('%s: Auto Predictability - %s~%s' % (category, start_date, end_date))
+    plt.xlabel('auto predictability')
+    plt.grid(axis='x')
+    plt.margins(y=0.01)
+    plt.autoscale()
+    plt.tight_layout()
+    plt.savefig(path + '/%s-auto-predictability-%s-%s.png' % (category, start_date, end_date))    data = pd.DataFrame(erDict, index=['value']).sort_values(by=['value'], axis=1)
+    plt.figure(figsize=(15, 8))
+    plt.barh(np.arange(len(data.columns)), data.values[0], 0.35)
+    plt.yticks(np.arange(len(data.columns)), data.columns.values)
+    plt.xticks(np.arange(0, 1, 0.05))
+    plt.title('%s: Efficiency Ratio - %s~%s' % (category, start_date, end_date))
+    plt.xlabel('efficiency ratio (n=%d)' % n)
+    plt.grid(axis='x')
+    plt.margins(y=0.01)
+    plt.autoscale()
+    plt.tight_layout()
+    plt.savefig(path + '/%s-efficiency-ratio-%s-%s.png' % (category, start_date, end_date))
