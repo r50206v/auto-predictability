@@ -14,6 +14,12 @@ calculating some predictability indicators for several assets
 1) Auto-Predictability 
 2) Efficient Ratio
 '''
+start_date, end_date = None, None
+if len(sys.argv) == 2:
+    start_date = sys.argv[1]
+elif len(sys.argv) == 3:
+    start_date = sys.argv[1]
+    end_date = sys.argv[2]
 
 n = 5 # for efficient ratio
 probMap, erMap = {}, {}
@@ -27,9 +33,11 @@ for fileName in tqdm(fileList):
     data = pd.read_csv(path + '/dataset/' + fileName, index_col=0)
     data.index = pd.to_datetime(data.index, format='%Y-%m-%d')
     
-    start_date = '2009-07-01' #'2005-12-31'
-    end_date = data.index[-1].strftime('%Y-%m-%d') #'2018-01-01'
-    data = data.loc[(data.index > start_date) & (data.index <= end_date)] #& (data.index < '2018-01-02')
+    if start_date is None:
+        start_date = '2009-07-01' #'2005-12-31'
+    if end_date is None:
+        end_date = data.index[-1].strftime('%Y-%m-%d') #'2018-01-01'
+    data = data.loc[(data.index > start_date) & (data.index <= end_date)]
 
 
     # calculate Efficiency Ratio
