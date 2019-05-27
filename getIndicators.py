@@ -23,8 +23,8 @@ elif len(sys.argv) == 3:
 
 
 n = 8 # for efficient ratio
-probMap = dict({k: {} for k in ['外匯','先進國家','新興市場','ETF','原物料']})
-erMap = dict({k: {} for k in ['外匯','先進國家','新興市場','ETF','原物料']})
+probMap = dict({k: {} for k in ['外匯','股市','ETF','原物料']})
+erMap = dict({k: {} for k in ['外匯','股市','ETF','原物料']})
 path = sys.path[0]
 fileList = sorted(os.listdir(path + '/dataset/'))
 sys.stderr.write('start processing %d files from %s' % (len(fileList), path+'/dataset/'))
@@ -50,6 +50,8 @@ for fileName in tqdm(fileList):
     # boxcox transformation
     data = data.pct_change()\
                .dropna()
+    if len(data) < 50:
+        continue
     # data = boxcox(data)
     # data = data.loc[(data != 0).any(1)]
 
