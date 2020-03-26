@@ -28,7 +28,7 @@ def autocovariance(Xi, k):
     autoCov = 0
     for i in np.arange(0, N-k):
         autoCov += (Xi[i+k] - Xs)*(Xi[i] - Xs)
-    return np.array([[ (1/N-1) * autoCov ]])
+    return np.array([[ 1/(N-1) * autoCov ]])
 
 
 def getBlock(y, p):
